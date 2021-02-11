@@ -1,7 +1,12 @@
 #include <Arduino.h>
+#include <Stepper.h>
+#include <SPIFFS.h>
+
+
+//Stepper leftStepper();
 
 void setup() {
-  // put your setup code here, to run once:
+
 }
 
 void loop() {
