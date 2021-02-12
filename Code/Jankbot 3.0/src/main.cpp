@@ -4,6 +4,7 @@
 #define LOGPIN 15
 #define STARTBTN 2
 #define STEP_DISTANCE 0.16
+#define STEPS_PER_DEGREE 10.19
 
 bool start = false;
 bool logIsThere = false;
@@ -18,15 +19,23 @@ Stepper leftStepper(200,26,25,33,32);
 
 TaskHandle_t logAlign;
 
+// Move forward by a specified number of steps
 void moveStraight(int steps){
   rightStepper.step(steps);
   leftStepper.step(steps);
 }
+//Rotate N amount of degrees, passed as an argument
+void rotateNdegrees(int deg){
+  leftStepper.step(round(deg*STEPS_PER_DEGREE));
+  rightStepper.step(-round(deg*STEPS_PER_DEGREE));
+}
 
+// Reset bot after timer interrupt
 void IRAM_ATTR onTimer(){
   ESP.restart();
 }
 
+// Align log to center of tray
 void logAlignTask(void * parameter){
   while(true){
 
@@ -34,23 +43,23 @@ void logAlignTask(void * parameter){
 }
 
 void setup() {
-  rightStepper.setSpeed(RPM);
+  rightStepper.setSpeed(RPM); // Setting stepper speeds
   leftStepper.setSpeed(RPM);
-  pinMode(LOGPIN, INPUT);
+  pinMode(LOGPIN, INPUT); // Setting input pins for log presence detection and start btn
   pinMode(STARTBTN, INPUT);
 
-  while(!start){
+  while(!start){ // Wait for button activation
     if(digitalRead(STARTBTN)){
       start = true;
     }
   }
 
-  timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &onTimer, true);
-  timerAlarmWrite(timer, 240000000, true);
-  timerAlarmEnable(timer);
+  timer = timerBegin(0, 80, true); //Create timer
+  timerAttachInterrupt(timer, &onTimer, true); // Attach interrupt function to timer
+  timerAlarmWrite(timer, 240000000, true); // Set timer to fire after 240M microseconds (4 minutes)
+  timerAlarmEnable(timer); // Start timer
 
-  xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore( // Creating alignment task on core 0 to run concurrently to movement code
     logAlignTask,
     "logAlignTask",
     10000,
@@ -64,17 +73,27 @@ void setup() {
 }
 
 void loop() {
-  while(!logIsThere){
-    if(digitalRead(LOGPIN)){
-      logIsThere = true;
-      //TODO: move to build platform
+  while(!logIsThere){ // When switch is not pressed (log not present)
+    if(digitalRead(LOGPIN)){ //On log drop event
+      logIsThere = true; //log is present
+      moveStraight(492);
+      rotateNdegrees(-90);
+      moveStraight(222);
+      rotateNdegrees(90);
+      moveStraight(250);
+      rotateNdegrees(180);
     }
   }
-  while(logIsThere){
-    if(!digitalRead(LOGPIN)){
-      logIsThere = false;
+  while(logIsThere){ // While switch is held down (log is present)
+    if(!digitalRead(LOGPIN)){ // On log lift event
+      logIsThere = false; // log is not present
       delay(500); // Wait for claw to fully clear bot before moving away
-      //TODO: move to river
+      moveStraight(250);
+      rotateNdegrees(-90);
+      moveStraight(222);
+      rotateNdegrees(90);
+      moveStraight(492);
+      rotateNdegrees(180);
     }
   }
 }
