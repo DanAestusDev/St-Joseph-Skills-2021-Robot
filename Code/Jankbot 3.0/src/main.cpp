@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Stepper.h>
-#define RPM 200
+#define RPM 150
 #define LOGPIN 36
 #define STARTBTN 37
 #define INNERRIGHT 38
@@ -27,19 +27,25 @@ TaskHandle_t logAlign;
 
 // Move forward by a specified number of steps
 void moveStraight(int steps){
-  rightStepper.step(steps);
-  leftStepper.step(steps);
+  for(int i = 0; i < steps; i++){
+    rightStepper.step(1);
+    leftStepper.step(1);
+  }
 }
 //Rotate N amount of degrees, passed as an argument
 void rotateNdegrees(int deg){
-  leftStepper.step(round(deg*STEPS_PER_DEGREE));
-  rightStepper.step(-round(deg*STEPS_PER_DEGREE));
+  for(int i = 0; i < round(deg*STEPS_PER_DEGREE); i++){
+    leftStepper.step(1);
+    rightStepper.step(1);
+  }
 }
 
 // Reset bot after timer interrupt
 void IRAM_ATTR onTimer(){
-  Serial.print("Timer triggered, Restarting.../n");
-  ESP.restart();
+  Serial.print("Timer triggered, Stopping/n");
+  while(true){
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+  }
 }
 
 // Align log to center of tray
