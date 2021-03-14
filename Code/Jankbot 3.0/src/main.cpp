@@ -1,12 +1,14 @@
 #include <Arduino.h>
-#include <Stepper.h>
-#define RPM 150
-#define LOGPIN 36
-#define STARTBTN 37
-#define INNERRIGHT 38
-#define INNERLEFT 39
-#define OUTERRIGHT 34
-#define OUTERLEFT 35
+#include "BasicStepperDriver.h"
+#include "MultiDriver.h"
+#include "SyncDriver.h"
+#define RPM 200
+#define LOGPIN 33
+#define STARTBTN 32
+#define INNERRIGHT 39
+#define INNERLEFT 36
+#define OUTERRIGHT 35
+#define OUTERLEFT 34
 #define STEP_DISTANCE 0.16
 #define STEPS_PER_DEGREE 10.19
 
@@ -17,27 +19,21 @@ int totalInterruptCounter;
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
-Stepper rightStepper(200,13,12,14,27);
+BasicStepperDriver leftStepper(200, 13, 12);
+BasicStepperDriver rightStepper(200, 14, 27);
+BasicStepperDriver logStepper(20, 26, 25);
 
-Stepper leftStepper(200,21,22,19,23);
-
-Stepper logStepper(20,26,25,5,18);
+MultiDriver driveController(leftStepper, rightStepper);
 
 TaskHandle_t logAlign;
 
-// Move forward by a specified number of steps
+// Move forward or reverse by a specified number of steps
 void moveStraight(int steps){
-  for(int i = 0; i < steps; i++){
-    rightStepper.step(1);
-    leftStepper.step(1);
-  }
+  driveController.move(steps,steps);
 }
 //Rotate N amount of degrees, passed as an argument
 void rotateNdegrees(int deg){
-  for(int i = 0; i < round(deg*STEPS_PER_DEGREE); i++){
-    leftStepper.step(1);
-    rightStepper.step(1);
-  }
+  driveController.move(round(deg*STEPS_PER_DEGREE),-(round(deg*STEPS_PER_DEGREE)));
 }
 
 // Reset bot after timer interrupt
@@ -93,9 +89,8 @@ void platformToRiver(){
 
 void setup() {
   Serial.begin(115200);
-  rightStepper.setSpeed(RPM); // Setting stepper speeds
-  leftStepper.setSpeed(RPM);
-  logStepper.setSpeed(RPM);
+  leftStepper.begin(RPM, 1);
+  rightStepper.begin(RPM, 1);  
   pinMode(LOGPIN, INPUT); // Setting input pins for log presence detection and start btn
   pinMode(STARTBTN, INPUT);
 
