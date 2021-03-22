@@ -2,7 +2,7 @@
 #include "BasicStepperDriver.h"
 #include "MultiDriver.h"
 #include "SyncDriver.h"
-#define RPM 200
+#define RPM 20
 #define LOGPIN 33
 #define STARTBTN 32
 #define INNERRIGHT 39
@@ -10,7 +10,10 @@
 #define OUTERRIGHT 35
 #define OUTERLEFT 34
 #define STEP_DISTANCE 0.16
-#define STEPS_PER_DEGREE 10.19
+#define STEPS_PER_DEGREE 1.23
+#define MOTOR_ACCEL 2000
+#define MOTOR_DECEL 1000
+
 
 bool start = false;
 bool logIsThere = false;
@@ -29,6 +32,7 @@ TaskHandle_t logAlign;
 
 // Move forward or reverse by a specified number of steps
 void moveStraight(int steps){
+  //leftStepper.move(steps);
   driveController.move(steps,steps);
 }
 //Rotate N amount of degrees, passed as an argument
@@ -48,7 +52,10 @@ void IRAM_ATTR onTimer(){
 void logAlignTask(void * parameter){
   while(true){
      if((abs(analogRead(INNERLEFT))-abs(analogRead(INNERRIGHT))) >= 50 || (abs(analogRead(OUTERLEFT))-abs(analogRead(OUTERRIGHT))) >= 50 ){
-
+       logStepper.move(1);
+     }
+    if((abs(analogRead(INNERRIGHT))-abs(analogRead(INNERLEFT))) >= 50 || (abs(analogRead(OUTERRIGHT))-abs(analogRead(OUTERLEFT))) >= 50 ){
+       logStepper.move(-1);
      }
     vTaskDelay(10 / portTICK_PERIOD_MS);
   }
@@ -63,9 +70,9 @@ void riverToPlatform(){
       moveStraight(492);
       rotateNdegrees(-90);
       moveStraight(222);
-      rotateNdegrees(90);
-      moveStraight(250);
-      rotateNdegrees(180);
+      rotateNdegrees(-90);
+      moveStraight(-250);
+      //rotateNdegrees(180);
       platformToRiver();
     }
   }
@@ -79,9 +86,9 @@ void platformToRiver(){
       moveStraight(250);
       rotateNdegrees(-90);
       moveStraight(222);
-      rotateNdegrees(90);
-      moveStraight(492);
-      rotateNdegrees(180);
+      rotateNdegrees(-90);
+      moveStraight(-492);
+      //rotateNdegrees(180);
       riverToPlatform();
     }
   }
@@ -93,58 +100,35 @@ void setup() {
   rightStepper.begin(RPM, 1);  
   pinMode(LOGPIN, INPUT); // Setting input pins for log presence detection and start btn
   pinMode(STARTBTN, INPUT);
-
-
+  // leftStepper.setSpeedProfile(leftStepper.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  // rightStepper.setSpeedProfile(rightStepper.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+   while(!start){ // Wait for button activation
+    if(!digitalRead(STARTBTN)){
+      Serial.println("Started");
+      start = true;
+    }
+  }
 
   timer = timerBegin(0, 80, true); //Create timer
   timerAttachInterrupt(timer, &onTimer, true); // Attach interrupt function to timer
   timerAlarmWrite(timer, 240000000, true); // Set timer to fire after 240M microseconds (4 minutes)
   timerAlarmEnable(timer); // Start timer
 
-  // xTaskCreatePinnedToCore( // Creating alignment task on core 0 to run concurrently to movement code
-  //   logAlignTask,
-  //   "logAlignTask",
-  //   10000,
-  //   NULL,
-  //   0,
-  //   &logAlign,
-  //   0
-  // );
+  xTaskCreatePinnedToCore( // Creating alignment task on core 0 to run concurrently to movement code
+    logAlignTask,
+    "logAlignTask",
+    10000,
+    NULL,
+    0,
+    &logAlign,
+    0
+  );
 
   //TODO: Add code to move to start position
 }
 
 void loop() {
-    while(!start){ // Wait for button activation
-    if(!digitalRead(STARTBTN)){
-      Serial.println("Started");
-      start = true;
-    }
-  }
+
   riverToPlatform();
-  // while(!logIsThere){ // When switch is not pressed (log not present)
-  //   if(!digitalRead(LOGPIN)){ //On log drop event
-  //     Serial.print("1st event");
-  //     logIsThere = true; //log is present
-  //     moveStraight(492);
-  //     rotateNdegrees(-90);
-  //     moveStraight(222);
-  //     rotateNdegrees(90);
-  //     moveStraight(250);
-  //     rotateNdegrees(180);
-  //   }
-  // }
-  // while(logIsThere){ // While switch is held down (log is present)
-  //   if(digitalRead(LOGPIN)){ // On log lift event
-  //     Serial.print("2nd event");
-  //     logIsThere = false; // log is not present
-  //     delay(500); // Wait for claw to fully clear bot before moving away
-  //     moveStraight(250);
-  //     rotateNdegrees(-90);
-  //     moveStraight(222);
-  //     rotateNdegrees(90);
-  //     moveStraight(492);
-  //     rotateNdegrees(180);
-  //   }
-  // }
+ 
 }
