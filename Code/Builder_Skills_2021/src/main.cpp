@@ -70,10 +70,48 @@ void driveMode(){
     leftDrive.spin(forward);
     rightDrive.spin(forward);
 
-  }
+  
 }
 void buildMode(){
   while(true){
+    if(vexRT.ButtonX.pressing()){
+      while(vexRT.ButtonX.pressing()){
+        if(!vexRT.ButtonX.pressing()){
+          xAxis.stop();
+          yAxis.stop();
+          zAxis.stop();
+          driveMode();
+        }
+      }
+    }
+
+    if(vexRT.ButtonUp.pressing()){
+      xAxis.setVelocity(100, percent);
+    } else if(vexRT.ButtonDown.pressing()){
+      xAxis.setVelocity(-100, percent);
+    } else {
+      xAxis.setVelocity(0, percent);
+    }
+
+    if(vexRT.ButtonLeft.pressing()){
+      yAxis.setVelocity(100, percent);
+    } else if(vexRT.ButtonRight.pressing()){
+      yAxis.setVelocity(-100, percent);
+    } else {
+      yAxis.setVelocity(0, percent);
+    }
+
+    if(vexRT.ButtonL1.pressing()){
+      zAxis.setVelocity(100, percent);
+    } else if(vexRT.ButtonL2.pressing()){
+      zAxis.setVelocity(-100, percent);
+    } else {
+      zAxis.setVelocity(0, percent);
+    }
     
+    xAxis.spin(forward);
+    yAxis.spin(forward);
+    zAxis.spin(forward);
+
   }
 }

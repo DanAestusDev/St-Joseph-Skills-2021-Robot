@@ -2,7 +2,7 @@
 #include "BasicStepperDriver.h"
 #include "MultiDriver.h"
 #include "SyncDriver.h"
-#define RPM 20
+#define RPM 30
 #define LOGPIN 33
 #define STARTBTN 32
 #define INNERRIGHT 39
@@ -67,11 +67,12 @@ void riverToPlatform(){
     if(!digitalRead(LOGPIN)){ //On log drop event
       Serial.println("1st event");
       logIsThere = true; //log is present
-      moveStraight(492);
-      rotateNdegrees(-90);
-      moveStraight(222);
-      rotateNdegrees(-90);
-      moveStraight(-250);
+      delay(500);
+      moveStraight(425);
+      rotateNdegrees(-44);
+      moveStraight(220);
+      rotateNdegrees(-133);
+      moveStraight(-260);
       //rotateNdegrees(180);
       platformToRiver();
     }
@@ -84,10 +85,10 @@ void platformToRiver(){
       logIsThere = false; // log is not present
       delay(500); // Wait for claw to fully clear bot before moving away
       moveStraight(250);
-      rotateNdegrees(-90);
-      moveStraight(222);
-      rotateNdegrees(-90);
-      moveStraight(-492);
+      rotateNdegrees(-44);
+      moveStraight(220);
+      rotateNdegrees(-133);
+      moveStraight(-435);
       //rotateNdegrees(180);
       riverToPlatform();
     }
