@@ -10,8 +10,8 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// Motor11              motor         11              
-// Controller1          controller                    
+// Motor11              motor         11
+// Controller1          controller
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -22,108 +22,93 @@ motor leftDrive = motor(PORT11, ratio18_1, false);
 motor frontDrive = motor(PORT12, ratio18_1, false);
 motor rightDrive = motor(PORT13, ratio18_1, true);
 motor rearDrive = motor(PORT14, ratio18_1, true);
-motor lift = motor(PORT15, ratio6_1,false);
+motor lift = motor(PORT15, ratio6_1, false);
 motor turntable = motor(PORT16, ratio18_1, false);
 motor grip = motor(PORT17, ratio6_1, false);
 
-controller Controller1 = controller(primary);
+controller vexRT = controller(primary);
 
 bool RemoteControlCodeEnabled = true;
 bool sideMotorsNeedStop = true;
 bool mainMotorsNeedStop = true;
+
+int deadband;
 
 char pattern[] = {'.'};
 
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-while(true){
-    if(RemoteControlCodeEnabled){
-        int ch1Val = Controller1.Axis1.position();
-        int ch2Val = Controller1.Axis2.position();
-        int ch3Val = Controller1.Axis3.position();
-        int ch4Val = Controller1.Axis4.position();
-        if(mainMotorsNeedStop){
-          leftDrive.stop();
-          rightDrive.stop();
-          mainMotorsNeedStop = false;
-        }
-        if(sideMotorsNeedStop){
-          frontDrive.stop();
-          rearDrive.stop();
-          sideMotorsNeedStop = false;
-        }
+  while (true) {
 
-        if(abs(ch2Val) > 5){
-          leftDrive.setVelocity(ch2Val, percent);
-          rightDrive.setVelocity(ch2Val, percent);
-          leftDrive.spin(forward);
-          rightDrive.spin(forward);
-          mainMotorsNeedStop = false;
-        }
+    // retrieving joystick values and doing the necessary math for square omni drive
 
-        if (abs(ch1Val) > 5){
-          frontDrive.setVelocity(ch1Val, percent);
-          rearDrive.setVelocity(ch1Val, percent);
-          frontDrive.spin(forward);
-          rearDrive.spin(forward);
-          sideMotorsNeedStop = false;
-        }
+    int leftDriveVal = vexRT.Axis3.position();
+    int rightDriveVal = vexRT.Axis2.position();
+    int frontDriveVal = ((vexRT.Axis3.position()-vexRT.Axis2.position())/2) + vexRT.Axis4.position();
+    int rearDriveVal = ((vexRT.Axis2.position()-vexRT.Axis3.position())/2) + vexRT.Axis1.position();
+    
+    // applying values to motors if they are greater than deadband, stopping motors if less than deadband
 
-        if (abs(ch4Val) > 5){
-          frontDrive.setVelocity(ch4Val, percent);
-          leftDrive.setVelocity(ch4Val, percent);
-          rearDrive.setVelocity(ch4Val, percent);
-          rightDrive.setVelocity(ch4Val, percent);
-          frontDrive.spin(forward);
-          rearDrive.spin(reverse);
-          leftDrive.spin(forward);
-          rightDrive.spin(reverse);
-          sideMotorsNeedStop = false;
-          mainMotorsNeedStop = false;
-        } else if(abs(ch4Val) < 5){
-          sideMotorsNeedStop = true;
-          mainMotorsNeedStop = true;
-          // frontDrive.stop();
-          // rearDrive.stop();
-          // leftDrive.stop();
-          // rightDrive.stop();
-        }
-        if(abs(ch2Val) < 5){
-          mainMotorsNeedStop = true;
-          // leftDrive.stop();
-          // rightDrive.stop();
-        }
-        if(abs(ch1Val) < 5){
-          sideMotorsNeedStop = true;
-          // frontDrive.stop();
-          // rearDrive.stop();
-        }
-
-
-        // leftDrive.setVelocity(Controller1.Axis3.position(), percent);
-        // leftDrive.spin(forward);
-
-        // rightDrive.setVelocity(Controller1.Axis2.position(), percent);
-        // rightDrive.spin(forward);
-
-        // frontDrive.setVelocity(Controller1.Axis4.position() + (Controller1.Axis3.position() - abs(Controller1.Axis2.position())), percent);
-        // frontDrive.spin(forward);
-
-        // rearDrive.setVelocity(Controller1.Axis1.position() + (Controller1.Axis2.position() - abs(Controller1.Axis3.position())), percent);
-        // rearDrive.spin(forward);
-      // if(abs(Controller1.Axis3.position()-Controller1.Axis2.position())>20){
-      //   frontDrive.setVelocity(Controller1.Axis3.position(),percent);
-      //   frontDrive.spin(forward);
-      //   rearDrive.setVelocity(Controller1.Axis2.position(),percent);
-      //   rearDrive.spin(forward);
-      // }
-      if(Controller1.ButtonX.pressing()){
-      turntable.rotateTo(90, degrees, false);
-      Controller1.rumble(pattern);
-      }
+    if(abs(leftDriveVal) < deadband){
+      leftDrive.setVelocity(0, percent);
+    } else {
+      leftDrive.setVelocity(leftDriveVal, percent);
     }
-    wait(20, msec);
+
+    if(abs(rightDriveVal) < deadband){
+      rightDrive.setVelocity(0, percent);
+    } else {
+      rightDrive.setVelocity(rightDriveVal, percent);
+    }
+
+    if(abs(frontDriveVal) < deadband){
+      frontDrive.setVelocity(0, percent);
+    } else {
+      frontDrive.setVelocity(frontDriveVal, percent);
+    }
+
+    if(abs(rearDriveVal) < deadband){
+      rearDrive.setVelocity(0, percent);
+    } else {
+      rearDrive.setVelocity(rearDriveVal, percent);
+    }
+
+    // trigger controls
+
+    if(vexRT.ButtonR1.pressing()){
+      lift.setVelocity(100, percent);
+    } else if(vexRT.ButtonR2.pressing()){
+      lift.setVelocity(-100, percent);
+    } else{
+      lift.setVelocity(0, percent);
+    }
+
+    // button controls
+
+    if(vexRT.ButtonX.pressing()){
+      grip.rotateTo(45, degrees, false);
+      vexRT.rumble(pattern);
+    }
+    if(vexRT.ButtonB.pressing()){
+      grip.rotateTo(0, degrees, false);
+      vexRT.rumble(pattern);
+    }
+
+    if (vexRT.ButtonY.pressing()) {
+      turntable.rotateTo(90, degrees, false);
+      vexRT.rumble(pattern);
+    }
+    if (vexRT.ButtonA.pressing()) {
+      turntable.rotateTo(0, degrees, false);
+      vexRT.rumble(pattern);
+    }
+    
+    lift.spin(forward);
+    leftDrive.spin(forward);
+    rightDrive.spin(forward);
+    frontDrive.spin(forward);
+    rearDrive.spin(forward);
+
   }
-  
 }
