@@ -17,7 +17,7 @@
 using namespace vex;
 controller vexRT = controller(primary);
 motor leftDrive = motor(PORT1, ratio18_1,false);
-motor rightDrive = motor(PORT2, ratio18_1,false);
+motor rightDrive = motor(PORT2, ratio18_1,true);
 motor xAxis = motor(PORT3, ratio18_1,false);
 motor yAxis = motor(PORT4, ratio18_1,false);
 motor zAxis = motor(PORT5, ratio18_1,false);
@@ -34,7 +34,7 @@ int main() {
   vexcodeInit();
   //minimum value of channels to prevent drift
   int deadband = 5;
-
+  driveMode();
 
   
 }
@@ -64,7 +64,7 @@ void driveMode(){
     if (abs(rightSpeed) < 5){
       rightDrive.setVelocity(0,percent);
     } else {
-      rightDrive.setVelocity(leftSpeed,percent);
+      rightDrive.setVelocity(rightSpeed,percent);
     }
 
     leftDrive.spin(forward);
