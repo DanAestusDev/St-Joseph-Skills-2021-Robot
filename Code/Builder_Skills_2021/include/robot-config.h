@@ -2,6 +2,9 @@ using namespace vex;
 
 extern brain Brain;
 
+extern motor29 rotator;
+extern motor29 claw;
+
 // VEXcode devices
 
 /**

@@ -3,14 +3,36 @@
 /*    Module:       main.cpp                                                  */
 /*    Author:       C:\Users\Dan                                              */
 /*    Created:      Mon Mar 22 2021                                           */
-/*    Description:  V5 project                                                */
+/*    Description:  Skills 2021 builder bot                                   */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// ---- END VEXCODE CONFIGURED DEVICES ----
+/*
+Control scheme:
+
+Drive mode(starting mode):
+
+Analog stick axes 2 and 3 control right and left drive motors respectively
+Pretty much basic tank drive
+
+X button switches to build mode
+
+Build mode:
+
+Right stick controls x and y movement 
+
+Left stick axis 4 rotates the log using the rotator motor
+
+Right shoulder buttons control z axis
+
+Buttons Y and A open and close claw
+
+Left shoulder buttons spin turntable
+
+X button switches back to drive mode.
+
+*/
+
 
 #include "vex.h"
 
@@ -19,21 +41,22 @@ controller vexRT = controller(primary);
 motor leftDrive = motor(PORT1, ratio18_1,false);
 motor rightDrive = motor(PORT2, ratio18_1,true);
 motor xAxis = motor(PORT3, ratio18_1,false);
-motor yAxis = motor(PORT4, ratio18_1,false);
-motor zAxis = motor(PORT5, ratio18_1,false);
-motor turnTable = motor(PORT6, ratio18_1,false);
-motor rotator = motor(PORT7, ratio18_1,false);
-motor claw = motor(PORT8, ratio18_1,false);
+motor xAxis2 = motor(PORT4, ratio18_1,true);
+motor yAxis = motor(PORT5, ratio18_1,false);
+motor zAxis = motor(PORT6, ratio18_1,false);
+motor turnTable = motor(PORT7, ratio18_1,false);
+
 
 void driveMode();
 
 void buildMode();
+//minimum value of channels to prevent drift
+int deadband = 5;
 
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  //minimum value of channels to prevent drift
-  int deadband = 5;
+  
   driveMode();
 
   
@@ -55,13 +78,13 @@ void driveMode(){
     int leftSpeed = vexRT.Axis3.position();
     int rightSpeed = vexRT.Axis2.position();
 
-    if (abs(leftSpeed) < 5){
+    if (abs(leftSpeed) < deadband){
       leftDrive.setVelocity(0,percent);
     } else {
       leftDrive.setVelocity(leftSpeed,percent);
     }
 
-    if (abs(rightSpeed) < 5){
+    if (abs(rightSpeed) < deadband){
       rightDrive.setVelocity(0,percent);
     } else {
       rightDrive.setVelocity(rightSpeed,percent);
@@ -74,44 +97,72 @@ void driveMode(){
 }
 void buildMode(){
   while(true){
+    // check if x button is pressed; if so, stop all motors and switch to drive mode
     if(vexRT.ButtonX.pressing()){
       while(vexRT.ButtonX.pressing()){
         if(!vexRT.ButtonX.pressing()){
           xAxis.stop();
           yAxis.stop();
           zAxis.stop();
+          turnTable.stop();
+          rotator.stop();
+          claw.stop();
           driveMode();
         }
       }
     }
+    //retrieving joystick values
 
-    if(vexRT.ButtonUp.pressing()){
-      xAxis.setVelocity(100, percent);
-    } else if(vexRT.ButtonDown.pressing()){
-      xAxis.setVelocity(-100, percent);
+    int xSpeed =  vexRT.Axis2.position();
+    int ySpeed = vexRT.Axis1.position();
+    int logSpinSpeed = vexRT.Axis4.position();
+
+    if (abs(xSpeed) < deadband){
+      xAxis.setVelocity(0,percent);
+      xAxis2.setVelocity(0,percent);
     } else {
-      xAxis.setVelocity(0, percent);
+      xAxis.setVelocity(xSpeed,percent);
+      xAxis2.setVelocity(xSpeed,percent);
+    }
+    if (abs(ySpeed) < deadband){
+      yAxis.setVelocity(0,percent);
+    } else {
+      yAxis.setVelocity(ySpeed,percent);
+    }
+    if (abs(logSpinSpeed) < deadband){
+      rotator.setVelocity(0,percent);
+    } else {
+      rotator.setVelocity(ySpeed,percent);
     }
 
-    if(vexRT.ButtonLeft.pressing()){
-      yAxis.setVelocity(100, percent);
-    } else if(vexRT.ButtonRight.pressing()){
-      yAxis.setVelocity(-100, percent);
+    if(vexRT.ButtonY.pressing()){
+      claw.setVelocity(100, percent);
+    } else if(vexRT.ButtonA.pressing()){
+      claw.setVelocity(-100, percent);
     } else {
-      yAxis.setVelocity(0, percent);
+      claw.setVelocity(0, percent);
     }
 
-    if(vexRT.ButtonL1.pressing()){
-      zAxis.setVelocity(100, percent);
-    } else if(vexRT.ButtonL2.pressing()){
-      zAxis.setVelocity(-100, percent);
+    if(vexRT.ButtonR1.pressing()){
+      zAxis.setVelocity(50, percent);
+    } else if(vexRT.ButtonR2.pressing()){
+      zAxis.setVelocity(-50, percent);
     } else {
       zAxis.setVelocity(0, percent);
+    }
+    if(vexRT.ButtonL1.pressing()){
+      turnTable.setVelocity(50, percent);
+    } else if(vexRT.ButtonL2.pressing()){
+      turnTable.setVelocity(-50, percent);
+    } else {
+      turnTable.setVelocity(0, percent);
     }
     
     xAxis.spin(forward);
     yAxis.spin(forward);
     zAxis.spin(forward);
-
+    rotator.spin(forward);
+    claw.spin(forward);
+    turnTable.spin(forward);
   }
 }

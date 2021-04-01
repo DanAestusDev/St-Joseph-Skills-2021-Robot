@@ -7,6 +7,9 @@ using code = vision::code;
 // A global instance of brain used for printing to the V5 Brain screen
 brain  Brain;
 
+extern motor29 rotator = motor29(Brain.ThreeWirePort.A, false);
+extern motor29 claw = motor29(Brain.ThreeWirePort.B,false);
+
 // VEXcode device constructors
 
 // VEXcode generated functions

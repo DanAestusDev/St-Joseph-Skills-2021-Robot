@@ -5,7 +5,7 @@ extern brain Brain;
 // VEXcode devices
 extern motor Motor11;
 extern controller Controller1;
-
+extern motor29 grip;
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
  * 

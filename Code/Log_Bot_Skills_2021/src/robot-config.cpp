@@ -7,6 +7,8 @@ using code = vision::code;
 // A global instance of brain used for printing to the V5 Brain screen
 brain  Brain;
 
+motor29 grip = motor29(Brain.ThreeWirePort.B, false);
+
 // VEXcode device constructors
 
 
