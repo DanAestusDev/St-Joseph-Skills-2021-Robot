@@ -3,6 +3,7 @@
 #include "MultiDriver.h"
 #include "SyncDriver.h"
 #define RPM 30
+#define TURNRPM 20
 #define LOGPIN 33
 #define STARTBTN 32
 #define INNERRIGHT 39
@@ -10,7 +11,7 @@
 #define OUTERRIGHT 35
 #define OUTERLEFT 34
 #define STEP_DISTANCE 0.16
-#define STEPS_PER_DEGREE 1.23
+#define STEPS_PER_DEGREE 1.26
 #define MOTOR_ACCEL 2000
 #define MOTOR_DECEL 1000
 
@@ -33,10 +34,14 @@ TaskHandle_t logAlign;
 // Move forward or reverse by a specified number of steps
 void moveStraight(int steps){
   //leftStepper.move(steps);
+ // leftStepper.setRPM(RPM);
+  //rightStepper.setRPM(RPM);
   driveController.move(steps,steps);
 }
 //Rotate N amount of degrees, passed as an argument
-void rotateNdegrees(int deg){
+void rotateNdegrees(float deg){
+ // leftStepper.setRPM(TURNRPM);
+  //rightStepper.setRPM(TURNRPM);
   driveController.move(round(deg*STEPS_PER_DEGREE),-(round(deg*STEPS_PER_DEGREE)));
 }
 
@@ -69,9 +74,9 @@ void riverToPlatform(){
       logIsThere = true; //log is present
       delay(500);
       moveStraight(425);
-      rotateNdegrees(-44);
+      rotateNdegrees(-47.5);
       moveStraight(220);
-      rotateNdegrees(-133);
+      rotateNdegrees(-138.5);
       moveStraight(-260);
       //rotateNdegrees(180);
       platformToRiver();
@@ -84,11 +89,11 @@ void platformToRiver(){
       Serial.println("2nd event");
       logIsThere = false; // log is not present
       delay(500); // Wait for claw to fully clear bot before moving away
-      moveStraight(250);
-      rotateNdegrees(-44);
+      moveStraight(260);
+      rotateNdegrees(-47.5);
       moveStraight(220);
-      rotateNdegrees(-133);
-      moveStraight(-435);
+      rotateNdegrees(-138.5);
+      moveStraight(-419);
       //rotateNdegrees(180);
       riverToPlatform();
     }
