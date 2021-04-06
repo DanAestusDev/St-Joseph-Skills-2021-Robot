@@ -18,10 +18,10 @@
 
 using namespace vex;
 
-motor leftDrive = motor(PORT11, ratio18_1, false);
-motor frontDrive = motor(PORT12, ratio18_1, false);
-motor rightDrive = motor(PORT13, ratio18_1, true);
-motor rearDrive = motor(PORT14, ratio18_1, true);
+motor frontRight = motor(PORT11, ratio18_1, false);
+motor frontLeft = motor(PORT12, ratio18_1, false);
+motor backRight = motor(PORT13, ratio18_1, true);
+motor backLeft = motor(PORT14, ratio18_1, true);
 motor lift = motor(PORT15, ratio6_1, false);
 motor lift2 = motor(PORT16, ratio6_1, true);
 motor turntable = motor(PORT17, ratio18_1, false);
@@ -41,37 +41,37 @@ int main() {
   vexcodeInit();
   while (true) {
 
-    // retrieving joystick values and doing the necessary math for square omni drive
-
-    int leftDriveVal = vexRT.Axis3.position();
-    int rightDriveVal = vexRT.Axis2.position();
-    int frontDriveVal = ((vexRT.Axis3.position()-vexRT.Axis2.position())/2) + vexRT.Axis4.position();
-    int rearDriveVal = ((vexRT.Axis2.position()-vexRT.Axis3.position())/2) + vexRT.Axis1.position();
+    // retrieving joystick values and doing the necessary math for mecanum drive
     
+    int frontRightVal = vexRT.Axis2.position() - vexRT.Axis1.position() - vexRT.Axis4.position();
+    int frontLeftVal = vexRT.Axis2.position() + vexRT.Axis1.position() + vexRT.Axis4.position();
+    int backRightVal = vexRT.Axis2.position() + vexRT.Axis1.position() - vexRT.Axis4.position();
+    int backLeftVal = vexRT.Axis2.position() - vexRT.Axis1.position() + vexRT.Axis4.position();
+
     // applying values to motors if they are greater than deadband, stopping motors if less than deadband
 
-    if(abs(leftDriveVal) < deadband){
-      leftDrive.setVelocity(0, percent);
+    if(abs(frontRightVal) < deadband){
+      frontRight.setVelocity(0, percent);
     } else {
-      leftDrive.setVelocity(leftDriveVal, percent);
+      frontRight.setVelocity(frontRightVal, percent);
     }
 
-    if(abs(rightDriveVal) < deadband){
-      rightDrive.setVelocity(0, percent);
+    if(abs(frontLeftVal) < deadband){
+      frontLeft.setVelocity(0, percent);
     } else {
-      rightDrive.setVelocity(rightDriveVal, percent);
+      frontLeft.setVelocity(frontLeftVal, percent);
     }
 
-    if(abs(frontDriveVal) < deadband){
-      frontDrive.setVelocity(0, percent);
+    if(abs(backRightVal) < deadband){
+      backRight.setVelocity(0, percent);
     } else {
-      frontDrive.setVelocity(frontDriveVal, percent);
+      backRight.setVelocity(backRightVal, percent);
     }
 
-    if(abs(rearDriveVal) < deadband){
-      rearDrive.setVelocity(0, percent);
+    if(abs(backLeftVal) < deadband){
+      backLeft.setVelocity(0, percent);
     } else {
-      rearDrive.setVelocity(rearDriveVal, percent);
+      backLeft.setVelocity(backLeftVal, percent);
     }
 
     // trigger controls
@@ -108,10 +108,10 @@ int main() {
     
     lift.spin(forward);
     lift2.spin(forward);
-    leftDrive.spin(forward);
-    rightDrive.spin(forward);
-    frontDrive.spin(forward);
-    rearDrive.spin(forward);
+    frontRight.spin(forward);
+    frontLeft.spin(forward);
+    backRight.spin(forward);
+    backLeft.spin(forward);
     grip.spin(forward);
   }
 }
