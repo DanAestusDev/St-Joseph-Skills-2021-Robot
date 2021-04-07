@@ -11,7 +11,7 @@
 #define OUTERRIGHT 35
 #define OUTERLEFT 34
 #define STEP_DISTANCE 0.16
-#define STEPS_PER_DEGREE 1.26
+#define STEPS_PER_DEGREE 1.33
 #define MOTOR_ACCEL 2000
 #define MOTOR_DECEL 1000
 
@@ -56,6 +56,7 @@ void IRAM_ATTR onTimer(){
 // Align log to center of tray
 void logAlignTask(void * parameter){
   while(true){
+   // logStepper.move(1);
      if((abs(analogRead(INNERLEFT))-abs(analogRead(INNERRIGHT))) >= 50 || (abs(analogRead(OUTERLEFT))-abs(analogRead(OUTERRIGHT))) >= 50 ){
        logStepper.move(1);
      }
@@ -74,10 +75,10 @@ void riverToPlatform(){
       logIsThere = true; //log is present
       delay(500);
       moveStraight(425);
-      rotateNdegrees(-47.5);
+      rotateNdegrees(-45);
       moveStraight(220);
-      rotateNdegrees(-138.5);
-      moveStraight(-260);
+      rotateNdegrees(-135);
+      moveStraight(-270);
       //rotateNdegrees(180);
       platformToRiver();
     }
@@ -90,10 +91,10 @@ void platformToRiver(){
       logIsThere = false; // log is not present
       delay(500); // Wait for claw to fully clear bot before moving away
       moveStraight(260);
-      rotateNdegrees(-47.5);
+      rotateNdegrees(-44);
       moveStraight(220);
-      rotateNdegrees(-138.5);
-      moveStraight(-419);
+      rotateNdegrees(-134.5);
+      moveStraight(-435);
       //rotateNdegrees(180);
       riverToPlatform();
     }
@@ -104,6 +105,7 @@ void setup() {
   Serial.begin(115200);
   leftStepper.begin(RPM, 1);
   rightStepper.begin(RPM, 1);  
+  logStepper.begin(5,1);
   pinMode(LOGPIN, INPUT); // Setting input pins for log presence detection and start btn
   pinMode(STARTBTN, INPUT);
   // leftStepper.setSpeedProfile(leftStepper.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
@@ -131,6 +133,15 @@ void setup() {
   );
 
   //TODO: Add code to move to start position
+  moveStraight(906);
+  rotateNdegrees(90);
+  moveStraight(450);
+  rotateNdegrees(90);
+  moveStraight(188);
+  rotateNdegrees(45);
+  moveStraight(750);
+  rotateNdegrees(135);
+  moveStraight(-470);
 }
 
 void loop() {

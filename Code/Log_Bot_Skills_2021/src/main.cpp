@@ -18,10 +18,10 @@
 
 using namespace vex;
 
-motor frontRight = motor(PORT11, ratio18_1, false);
-motor frontLeft = motor(PORT12, ratio18_1, false);
-motor backRight = motor(PORT13, ratio18_1, true);
-motor backLeft = motor(PORT14, ratio18_1, true);
+motor frontRight = motor(PORT1, ratio18_1, false);
+motor frontLeft = motor(PORT11, ratio18_1, false);
+motor backRight = motor(PORT10, ratio18_1, true);
+motor backLeft = motor(PORT20, ratio18_1, true);
 motor lift = motor(PORT15, ratio6_1, false);
 motor lift2 = motor(PORT16, ratio6_1, true);
 motor turntable = motor(PORT17, ratio18_1, false);
@@ -43,10 +43,10 @@ int main() {
 
     // retrieving joystick values and doing the necessary math for mecanum drive
     
-    int frontRightVal = vexRT.Axis2.position() - vexRT.Axis1.position() - vexRT.Axis4.position();
-    int frontLeftVal = vexRT.Axis2.position() + vexRT.Axis1.position() + vexRT.Axis4.position();
-    int backRightVal = vexRT.Axis2.position() + vexRT.Axis1.position() - vexRT.Axis4.position();
-    int backLeftVal = vexRT.Axis2.position() - vexRT.Axis1.position() + vexRT.Axis4.position();
+    int frontRightVal = vexRT.Axis1.position() - vexRT.Axis2.position() + vexRT.Axis4.position();
+    int frontLeftVal = vexRT.Axis1.position() + vexRT.Axis2.position() + vexRT.Axis4.position();
+    int backRightVal = vexRT.Axis1.position() + vexRT.Axis2.position() - vexRT.Axis4.position();
+    int backLeftVal = vexRT.Axis1.position() - vexRT.Axis2.position() - vexRT.Axis4.position();
 
     // applying values to motors if they are greater than deadband, stopping motors if less than deadband
 

@@ -132,7 +132,7 @@ void buildMode(){
     if (abs(logSpinSpeed) < deadband){
       rotator.setVelocity(0,percent);
     } else {
-      rotator.setVelocity(ySpeed,percent);
+      rotator.setVelocity(logSpinSpeed,percent);
     }
 
     if(vexRT.ButtonY.pressing()){
@@ -159,6 +159,7 @@ void buildMode(){
     }
     
     xAxis.spin(forward);
+    xAxis2.spin(forward);
     yAxis.spin(forward);
     zAxis.spin(forward);
     rotator.spin(forward);
