@@ -121,13 +121,13 @@ void buildMode(){
       xAxis.setVelocity(0,percent);
       xAxis2.setVelocity(0,percent);
     } else {
-      xAxis.setVelocity(xSpeed,percent);
-      xAxis2.setVelocity(xSpeed,percent);
+      xAxis.setVelocity(xSpeed/3,percent);
+      xAxis2.setVelocity(xSpeed/3,percent);
     }
     if (abs(ySpeed) < deadband){
       yAxis.setVelocity(0,percent);
     } else {
-      yAxis.setVelocity(ySpeed,percent);
+      yAxis.setVelocity(-ySpeed,percent);
     }
     if (abs(logSpinSpeed) < deadband){
       rotator.setVelocity(0,percent);
@@ -144,9 +144,9 @@ void buildMode(){
     }
 
     if(vexRT.ButtonR1.pressing()){
-      zAxis.setVelocity(50, percent);
+      zAxis.setVelocity(100, percent);
     } else if(vexRT.ButtonR2.pressing()){
-      zAxis.setVelocity(-50, percent);
+      zAxis.setVelocity(-100, percent);
     } else {
       zAxis.setVelocity(0, percent);
     }

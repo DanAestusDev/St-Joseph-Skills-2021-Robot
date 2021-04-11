@@ -22,7 +22,7 @@ motor frontRight = motor(PORT1, ratio18_1, false);
 motor frontLeft = motor(PORT11, ratio18_1, false);
 motor backRight = motor(PORT10, ratio18_1, true);
 motor backLeft = motor(PORT20, ratio18_1, true);
-motor lift = motor(PORT15, ratio6_1, false);
+motor lift = motor(PORT6, ratio6_1, false);
 motor lift2 = motor(PORT16, ratio6_1, true);
 motor turntable = motor(PORT17, ratio18_1, false);
 
@@ -98,7 +98,7 @@ int main() {
     }
 
     if (vexRT.ButtonY.pressing()) {
-      turntable.rotateTo(90, degrees, false);
+      turntable.rotateTo(450, degrees, false);
       vexRT.rumble(pattern);
     }
     if (vexRT.ButtonA.pressing()) {

@@ -40,8 +40,7 @@ void moveStraight(int steps){
 }
 //Rotate N amount of degrees, passed as an argument
 void rotateNdegrees(float deg){
- // leftStepper.setRPM(TURNRPM);
-  //rightStepper.setRPM(TURNRPM);
+
   driveController.move(round(deg*STEPS_PER_DEGREE),-(round(deg*STEPS_PER_DEGREE)));
 }
 
@@ -133,7 +132,12 @@ void setup() {
   );
 
   //TODO: Add code to move to start position
+
+  leftStepper.setRPM(20);
+  rightStepper.setRPM(20);
   moveStraight(906);
+  leftStepper.setRPM(30);
+  rightStepper.setRPM(30);
   rotateNdegrees(90);
   moveStraight(450);
   rotateNdegrees(90);
