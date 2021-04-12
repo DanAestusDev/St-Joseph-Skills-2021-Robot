@@ -32,7 +32,9 @@ bool RemoteControlCodeEnabled = true;
 bool sideMotorsNeedStop = true;
 bool mainMotorsNeedStop = true;
 
-int deadband;
+bool precisionMode;
+
+int deadband = 5;
 
 char pattern[] = {'.'};
 
@@ -47,6 +49,23 @@ int main() {
     int frontLeftVal = vexRT.Axis1.position() + vexRT.Axis2.position() + vexRT.Axis4.position();
     int backRightVal = vexRT.Axis1.position() + vexRT.Axis2.position() - vexRT.Axis4.position();
     int backLeftVal = vexRT.Axis1.position() - vexRT.Axis2.position() - vexRT.Axis4.position();
+
+    if(vexRT.ButtonRight.pressing()){
+      if(precisionMode == true){
+        precisionMode = false;
+      }
+      if(precisionMode == false){
+        precisionMode = true;
+      }
+      wait(20,msec);
+    }
+
+    if(precisionMode){
+      frontRightVal = frontRightVal/2;
+      frontLeftVal = frontLeftVal/2;
+      backRightVal = backRightVal/2;
+      backLeftVal = backLeftVal/2;
+    }
 
     // applying values to motors if they are greater than deadband, stopping motors if less than deadband
 
@@ -90,9 +109,9 @@ int main() {
     // button controls
 
     if(vexRT.ButtonX.pressing()){
-      grip.setVelocity(100, percent);
+      grip.setVelocity(50, percent);
     } else if (vexRT.ButtonB.pressing()){
-      grip.setVelocity(-100, percent);
+      grip.setVelocity(-50, percent);
     } else {
       grip.setVelocity(0, percent);
     }
