@@ -15,7 +15,10 @@ Drive mode(starting mode):
 Analog stick axes 2 and 3 control right and left drive motors respectively
 Pretty much basic tank drive
 
+B button zeros out the carriage motor encoders
+
 X button switches to build mode
+
 
 Build mode:
 
@@ -29,6 +32,10 @@ Buttons Y and A open and close claw
 
 Left shoulder buttons spin turntable
 
+Directional buttons move the carriage to predefined locations
+
+B button zeros out the carriage motor encoders
+
 X button switches back to drive mode.
 
 */
@@ -40,12 +47,11 @@ using namespace vex;
 controller vexRT = controller(primary);
 motor leftDrive = motor(PORT1, ratio18_1,false);
 motor rightDrive = motor(PORT2, ratio18_1,true);
-motor xAxis = motor(PORT3, ratio18_1,false);
-motor xAxis2 = motor(PORT4, ratio18_1,true);
-motor yAxis = motor(PORT5, ratio18_1,false);
-motor zAxis = motor(PORT6, ratio18_1,false);
+motor xAxis = motor(PORT3, ratio6_1,false);
+motor xAxis2 = motor(PORT4, ratio6_1,true);
+motor yAxis = motor(PORT5, ratio6_1,false);
+motor zAxis = motor(PORT6, ratio6_1,false);
 motor turnTable = motor(PORT7, ratio18_1,false);
-
 
 void driveMode();
 
@@ -77,6 +83,15 @@ void driveMode(){
     //Store values of controller joysticks
     int leftSpeed = vexRT.Axis3.position();
     int rightSpeed = vexRT.Axis2.position();
+
+    // Zero out carriage positions
+    if(vexRT.ButtonB.pressing()){
+      xAxis.resetRotation();
+      xAxis2.resetRotation();
+      yAxis.resetRotation();
+      zAxis.resetRotation();
+      turnTable.resetRotation();
+    }
 
     if (abs(leftSpeed) < deadband){
       leftDrive.setVelocity(0,percent);
@@ -117,6 +132,40 @@ void buildMode(){
     int ySpeed = vexRT.Axis1.position();
     int logSpinSpeed = vexRT.Axis4.position();
 
+    //Autonomous carriage positions
+    if(vexRT.ButtonUp.pressing()){
+      xAxis.rotateTo(180, degrees);
+      xAxis2.rotateTo(180, degrees);
+      yAxis.rotateTo(2500, degrees, true);
+      turnTable.rotateTo(450,degrees);
+    }
+    if(vexRT.ButtonLeft.pressing()){
+      xAxis.rotateTo(400, degrees);
+      xAxis2.rotateTo(400, degrees);
+      yAxis.rotateTo(5000, degrees, true);
+      turnTable.rotateTo(0,degrees);
+    }
+    if(vexRT.ButtonDown.pressing()){
+      xAxis.rotateTo(1800, degrees);
+      xAxis2.rotateTo(1800, degrees);
+      yAxis.rotateTo(2500, degrees, true);
+      turnTable.rotateTo(450,degrees);
+    }
+    if(vexRT.ButtonRight.pressing()){
+      xAxis.rotateTo(400, degrees);
+      xAxis2.rotateTo(400, degrees);
+      yAxis.rotateTo(0, degrees, true);
+      turnTable.rotateTo(0,degrees);
+    }
+    // Zero out carriage positions
+    if(vexRT.ButtonB.pressing()){
+      xAxis.resetRotation();
+      xAxis2.resetRotation();
+      yAxis.resetRotation();
+      zAxis.resetRotation();
+      turnTable.resetRotation();
+    }
+
     if (abs(xSpeed) < deadband){
       xAxis.setVelocity(0,percent);
       xAxis2.setVelocity(0,percent);
@@ -129,6 +178,7 @@ void buildMode(){
     } else {
       yAxis.setVelocity(-ySpeed,percent);
     }
+
     if (abs(logSpinSpeed) < deadband){
       rotator.setVelocity(0,percent);
     } else {
@@ -136,9 +186,9 @@ void buildMode(){
     }
 
     if(vexRT.ButtonY.pressing()){
-      claw.setVelocity(100, percent);
+      claw.setVelocity(60, percent);
     } else if(vexRT.ButtonA.pressing()){
-      claw.setVelocity(-100, percent);
+      claw.setVelocity(-60, percent);
     } else {
       claw.setVelocity(0, percent);
     }
@@ -150,6 +200,7 @@ void buildMode(){
     } else {
       zAxis.setVelocity(0, percent);
     }
+
     if(vexRT.ButtonL1.pressing()){
       turnTable.setVelocity(50, percent);
     } else if(vexRT.ButtonL2.pressing()){
@@ -165,5 +216,27 @@ void buildMode(){
     rotator.spin(forward);
     claw.spin(forward);
     turnTable.spin(forward);
+
+    // software travel limits
+    if(xAxis.rotation(degrees)>1900){
+      xAxis.rotateTo(1850, degrees);
+      xAxis2.rotateTo(1850, degrees, true);
+    }
+    if(xAxis.rotation(degrees)<0){
+      xAxis.rotateTo(0, degrees);
+      xAxis2.rotateTo(0, degrees, true);
+    }
+    if(yAxis.rotation(degrees)>5100){
+      yAxis.rotateTo(5100, degrees,true);
+    }
+    if(yAxis.rotation(degrees)<0){
+      yAxis.rotateTo(0, degrees,true);
+    }
+    if(zAxis.rotation(degrees)>1000){
+      zAxis.rotateTo(1000, degrees,true);
+    }
+    if(zAxis.rotation(degrees)<0){
+      zAxis.rotateTo(0, degrees,true);
+    }
   }
 }
