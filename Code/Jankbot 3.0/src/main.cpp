@@ -11,7 +11,7 @@
 #define OUTERRIGHT 35
 #define OUTERLEFT 34
 #define STEP_DISTANCE 0.16
-#define STEPS_PER_DEGREE 1.33
+#define STEPS_PER_DEGREE 1.31
 #define MOTOR_ACCEL 2000
 #define MOTOR_DECEL 1000
 
@@ -77,7 +77,7 @@ void riverToPlatform(){
       rotateNdegrees(-45);
       moveStraight(220);
       rotateNdegrees(-135);
-      moveStraight(-270);
+      moveStraight(-260);
       //rotateNdegrees(180);
       platformToRiver();
     }
@@ -133,19 +133,19 @@ void setup() {
 
   //TODO: Add code to move to start position
 
-  leftStepper.setRPM(20);
-  rightStepper.setRPM(20);
-  moveStraight(906);
-  leftStepper.setRPM(30);
-  rightStepper.setRPM(30);
-  rotateNdegrees(90);
-  moveStraight(450);
-  rotateNdegrees(90);
-  moveStraight(188);
-  rotateNdegrees(45);
-  moveStraight(750);
-  rotateNdegrees(135);
-  moveStraight(-470);
+  // leftStepper.setRPM(20);
+  // rightStepper.setRPM(20);
+  // moveStraight(750);
+  // leftStepper.setRPM(30);
+  // rightStepper.setRPM(30);
+  // rotateNdegrees(90);
+  // moveStraight(400);
+  // rotateNdegrees(90);
+  // moveStraight(180);
+  // rotateNdegrees(45);
+  // moveStraight(700);
+  // rotateNdegrees(135);
+  // moveStraight(-470);
 }
 
 void loop() {

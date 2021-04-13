@@ -132,31 +132,7 @@ void buildMode(){
     int ySpeed = vexRT.Axis1.position();
     int logSpinSpeed = vexRT.Axis4.position();
 
-    //Autonomous carriage positions
-    if(vexRT.ButtonUp.pressing()){
-      xAxis.rotateTo(180, degrees);
-      xAxis2.rotateTo(180, degrees);
-      yAxis.rotateTo(2500, degrees, true);
-      turnTable.rotateTo(450,degrees);
-    }
-    if(vexRT.ButtonLeft.pressing()){
-      xAxis.rotateTo(400, degrees);
-      xAxis2.rotateTo(400, degrees);
-      yAxis.rotateTo(5000, degrees, true);
-      turnTable.rotateTo(0,degrees);
-    }
-    if(vexRT.ButtonDown.pressing()){
-      xAxis.rotateTo(1800, degrees);
-      xAxis2.rotateTo(1800, degrees);
-      yAxis.rotateTo(2500, degrees, true);
-      turnTable.rotateTo(450,degrees);
-    }
-    if(vexRT.ButtonRight.pressing()){
-      xAxis.rotateTo(400, degrees);
-      xAxis2.rotateTo(400, degrees);
-      yAxis.rotateTo(0, degrees, true);
-      turnTable.rotateTo(0,degrees);
-    }
+    
     // Zero out carriage positions
     if(vexRT.ButtonB.pressing()){
       xAxis.resetRotation();
@@ -202,9 +178,9 @@ void buildMode(){
     }
 
     if(vexRT.ButtonL1.pressing()){
-      turnTable.setVelocity(50, percent);
+      turnTable.setVelocity(20, percent);
     } else if(vexRT.ButtonL2.pressing()){
-      turnTable.setVelocity(-50, percent);
+      turnTable.setVelocity(-20, percent);
     } else {
       turnTable.setVelocity(0, percent);
     }
@@ -217,26 +193,53 @@ void buildMode(){
     claw.spin(forward);
     turnTable.spin(forward);
 
+    //Autonomous carriage positions
+
+    if(vexRT.ButtonUp.pressing()){
+      xAxis.rotateTo(180, degrees,false);
+      xAxis2.rotateTo(180, degrees,false);
+      yAxis.rotateTo(2500, degrees, true);
+      turnTable.rotateTo(-280,degrees,false);
+    }
+    if(vexRT.ButtonLeft.pressing()){
+      xAxis.rotateTo(400, degrees, false);
+      xAxis2.rotateTo(400, degrees, false);
+      yAxis.rotateTo(5000, degrees, true);
+      turnTable.rotateTo(0,degrees, false);
+    }
+    if(vexRT.ButtonDown.pressing()){
+      xAxis.rotateTo(1800, degrees, false);
+      xAxis2.rotateTo(1800, degrees, false);
+      yAxis.rotateTo(2500, degrees, true);
+      turnTable.rotateTo(-280,degrees, false);
+    }
+    if(vexRT.ButtonRight.pressing()){
+      xAxis.rotateTo(400, degrees, false);
+      xAxis2.rotateTo(400, degrees,false);
+      yAxis.rotateTo(0, degrees, true);
+      turnTable.rotateTo(0,degrees, false);
+    }
+
     // software travel limits
-    if(xAxis.rotation(degrees)>1900){
-      xAxis.rotateTo(1850, degrees);
-      xAxis2.rotateTo(1850, degrees, true);
-    }
-    if(xAxis.rotation(degrees)<0){
-      xAxis.rotateTo(0, degrees);
-      xAxis2.rotateTo(0, degrees, true);
-    }
-    if(yAxis.rotation(degrees)>5100){
-      yAxis.rotateTo(5100, degrees,true);
-    }
-    if(yAxis.rotation(degrees)<0){
-      yAxis.rotateTo(0, degrees,true);
-    }
-    if(zAxis.rotation(degrees)>1000){
-      zAxis.rotateTo(1000, degrees,true);
-    }
-    if(zAxis.rotation(degrees)<0){
-      zAxis.rotateTo(0, degrees,true);
-    }
+    // if(xAxis.rotation(degrees)>1900){
+    //   xAxis.rotateTo(1850, degrees);
+    //   xAxis2.rotateTo(1850, degrees, true);
+    // }
+    // if(xAxis.rotation(degrees)<0){
+    //   xAxis.rotateTo(0, degrees);
+    //   xAxis2.rotateTo(0, degrees, true);
+    // }
+    // if(yAxis.rotation(degrees)>5100){
+    //   yAxis.rotateTo(5100, degrees,true);
+    // }
+    // if(yAxis.rotation(degrees)<0){
+    //   yAxis.rotateTo(0, degrees,true);
+    // }
+    // if(zAxis.rotation(degrees)>1000){
+    //   zAxis.rotateTo(1000, degrees,true);
+    // }
+    // if(zAxis.rotation(degrees)<0){
+    //   zAxis.rotateTo(0, degrees,true);
+    // }
   }
 }

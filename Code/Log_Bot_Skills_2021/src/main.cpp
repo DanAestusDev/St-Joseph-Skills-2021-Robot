@@ -32,7 +32,7 @@ bool RemoteControlCodeEnabled = true;
 bool sideMotorsNeedStop = true;
 bool mainMotorsNeedStop = true;
 
-bool precisionMode;
+bool precisionMode = false;
 
 int deadband = 5;
 
@@ -53,8 +53,7 @@ int main() {
     if(vexRT.ButtonRight.pressing()){
       if(precisionMode == true){
         precisionMode = false;
-      }
-      if(precisionMode == false){
+      } else if (precisionMode == false){
         precisionMode = true;
       }
       wait(20,msec);
@@ -104,13 +103,15 @@ int main() {
     } else{
       lift.setVelocity(0, percent);
       lift2.setVelocity(0, percent);
+      lift.setBrake(hold);
+      lift2.setBrake(hold);
     }
 
     // button controls
 
-    if(vexRT.ButtonX.pressing()){
+    if(vexRT.ButtonL1.pressing()){
       grip.setVelocity(50, percent);
-    } else if (vexRT.ButtonB.pressing()){
+    } else if (vexRT.ButtonR1.pressing()){
       grip.setVelocity(-50, percent);
     } else {
       grip.setVelocity(0, percent);
