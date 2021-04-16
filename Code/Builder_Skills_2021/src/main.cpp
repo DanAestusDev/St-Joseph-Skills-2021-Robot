@@ -70,14 +70,15 @@ int main() {
 
 void driveMode(){
     while(true){
-    if(vexRT.ButtonX.pressing()){
-      while(vexRT.ButtonX.pressing()){
-        if(!vexRT.ButtonX.pressing()){
+    if(vexRT.ButtonUp.pressing()){
+     // while(vexRT.ButtonUp.pressing()){
+        //if(!vexRT.ButtonUp.pressing()){
           rightDrive.stop();
           leftDrive.stop();
+          wait(1,msec);
           buildMode();
-        }
-      }
+       // }
+     // }
     }
 
     //Store values of controller joysticks
@@ -95,14 +96,16 @@ void driveMode(){
 
     if (abs(leftSpeed) < deadband){
       leftDrive.setVelocity(0,percent);
+      leftDrive.setBrake(hold);
     } else {
-      leftDrive.setVelocity(leftSpeed,percent);
+      leftDrive.setVelocity(leftSpeed/2,percent);
     }
 
     if (abs(rightSpeed) < deadband){
       rightDrive.setVelocity(0,percent);
+      rightDrive.setBrake(hold);
     } else {
-      rightDrive.setVelocity(rightSpeed,percent);
+      rightDrive.setVelocity(rightSpeed/2,percent);
     }
 
     leftDrive.spin(forward);
@@ -113,18 +116,19 @@ void driveMode(){
 void buildMode(){
   while(true){
     // check if x button is pressed; if so, stop all motors and switch to drive mode
-    if(vexRT.ButtonX.pressing()){
-      while(vexRT.ButtonX.pressing()){
-        if(!vexRT.ButtonX.pressing()){
+    if(vexRT.ButtonUp.pressing()){
+     // while(vexRT.ButtonUp.pressing()){
+       // if(!vexRT.ButtonUp.pressing()){
           xAxis.stop();
           yAxis.stop();
           zAxis.stop();
           turnTable.stop();
           rotator.stop();
           claw.stop();
+          wait(1, msec);
           driveMode();
-        }
-      }
+       // }
+     // }
     }
     //retrieving joystick values
 
@@ -145,12 +149,15 @@ void buildMode(){
     if (abs(xSpeed) < deadband){
       xAxis.setVelocity(0,percent);
       xAxis2.setVelocity(0,percent);
+      xAxis.setBrake(hold);
+      xAxis2.setBrake(hold);
     } else {
       xAxis.setVelocity(xSpeed/3,percent);
       xAxis2.setVelocity(xSpeed/3,percent);
     }
     if (abs(ySpeed) < deadband){
       yAxis.setVelocity(0,percent);
+      yAxis.setBrake(hold);
     } else {
       yAxis.setVelocity(-ySpeed,percent);
     }
@@ -162,25 +169,26 @@ void buildMode(){
     }
 
     if(vexRT.ButtonY.pressing()){
-      claw.setVelocity(60, percent);
+      claw.setVelocity(80, percent);
     } else if(vexRT.ButtonA.pressing()){
-      claw.setVelocity(-60, percent);
+      claw.setVelocity(-80, percent);
     } else {
       claw.setVelocity(0, percent);
     }
 
     if(vexRT.ButtonR1.pressing()){
-      zAxis.setVelocity(100, percent);
-    } else if(vexRT.ButtonR2.pressing()){
       zAxis.setVelocity(-100, percent);
+    } else if(vexRT.ButtonR2.pressing()){
+      zAxis.setVelocity(100, percent);
     } else {
       zAxis.setVelocity(0, percent);
+      zAxis.setBrake(hold);
     }
 
     if(vexRT.ButtonL1.pressing()){
-      turnTable.setVelocity(20, percent);
+      turnTable.setVelocity(25, percent);
     } else if(vexRT.ButtonL2.pressing()){
-      turnTable.setVelocity(-20, percent);
+      turnTable.setVelocity(-25, percent);
     } else {
       turnTable.setVelocity(0, percent);
     }

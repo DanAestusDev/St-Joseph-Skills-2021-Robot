@@ -22,8 +22,8 @@ motor frontRight = motor(PORT1, ratio18_1, false);
 motor frontLeft = motor(PORT11, ratio18_1, false);
 motor backRight = motor(PORT10, ratio18_1, true);
 motor backLeft = motor(PORT20, ratio18_1, true);
-motor lift = motor(PORT6, ratio6_1, false);
-motor lift2 = motor(PORT16, ratio6_1, true);
+motor lift = motor(PORT6, ratio36_1, false);
+motor lift2 = motor(PORT16, ratio18_1, true);
 motor turntable = motor(PORT17, ratio18_1, false);
 
 controller vexRT = controller(primary);
@@ -111,18 +111,18 @@ int main() {
 
     if(vexRT.ButtonL1.pressing()){
       grip.setVelocity(50, percent);
-    } else if (vexRT.ButtonR1.pressing()){
+    } else if (vexRT.ButtonL2.pressing()){
       grip.setVelocity(-50, percent);
     } else {
       grip.setVelocity(0, percent);
     }
 
     if (vexRT.ButtonY.pressing()) {
-      turntable.rotateTo(450, degrees, false);
+      turntable.rotateTo(450, degrees, 100, vex::velocityUnits::pct, false);
       vexRT.rumble(pattern);
     }
     if (vexRT.ButtonA.pressing()) {
-      turntable.rotateTo(0, degrees, false);
+      turntable.rotateTo(0, degrees, 100, vex::velocityUnits::pct, false);
       vexRT.rumble(pattern);
     }
     
